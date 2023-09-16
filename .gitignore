@@ -1,0 +1,6 @@
+src/gui/*.class
+src/main/*.class
+src/reader/*.class
+src/solver/*.class
+
+.DS_Store
