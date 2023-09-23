@@ -7,10 +7,10 @@ public class SokoBot {
 
     int x = 0;
     int y = 0;
-    ArrayList<int[]> states = new ArrayList<>();
-    Map<Integer, Integer> targets = new HashMap<Integer, Integer>();
+    ArrayList<int[]> states = new ArrayList<>(); // list of states visited
+    Map<Integer, Integer> targets = new HashMap<Integer, Integer>(); // list of targets
     PriorityQueue<Integer> minCosts = new PriorityQueue<>();
-    ArrayList<Integer> boxes = new ArrayList<>();
+    ArrayList<Integer> boxes = new ArrayList<>(); // list of current boxes' position
 
     // Finding the position of the player, boxes, and targets
     for (int i = 0; i < width; i++)
@@ -52,21 +52,53 @@ public class SokoBot {
 
     for (char action: actions(width, height, x, y, mapData, itemsData))
     {
-      System.out.println(cost(succX(x, action), succY(y, action), boxes));
+      System.out.println(cost(x, y, action, boxes, targets) + heuristic(boxes, targets));
     }
     return "lrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlr";
   }
 
-  public static int cost(int x, int y, ArrayList<Integer> boxes)
+  public static int cost(int x, int y, char move, ArrayList<Integer> boxes, Map<Integer, Integer> targets)
   {
     // if move box out of target, cost = 2
+    for (Map.Entry<Integer, Integer> set: targets.entrySet())
+    {
+      if (set.getKey() == x && set.getValue() == y)
+      {
+        return 2;
+      }
+    }
     // if move box, cost = 1
+    for (int i = 0; i < boxes.size() - 2; i++)
+    {
+        if (succX(x, move) == boxes.get(i) && succY(y, move) == boxes.get(i + 1))
+        {
+          return 1;
+        }
+    }
     // if just moving, cost = 0
-
-    // heuristic value = minimum manhattan distance between each box and a target
     return 0;
   }
-
+  public static int heuristic(ArrayList<Integer> boxes, Map<Integer, Integer> targets)
+  {
+//     heuristic value = minimum manhattan distance between each box and a target
+    int distance;
+    int sum = 0;
+    int value;
+    for (int i = 0; i < boxes.size() - 2; i++)
+    {
+      distance = Integer.MAX_VALUE;
+      for (Map.Entry<Integer, Integer> set: targets.entrySet())
+      {
+        value = Math.abs(boxes.get(i) - set.getKey()) + Math.abs(boxes.get(i + 1) - set.getValue());
+        if (distance > value)
+        {
+          distance = value;
+        }
+      }
+      sum += distance;
+    }
+    return sum;
+  }
 
   public static int succX(int x , char move)
   {
