@@ -36,7 +36,7 @@ public class SokoBot {
       }
     }
     // Adding the starting state to the visited states
-    int[] startState = new int[boxes.size()];
+    int[] startState = new int[boxes.size() + 2];
     startState[0] = x;
     startState[1] = y;
     for (int i = 2; i <  boxes.size(); i++)
@@ -68,7 +68,7 @@ public class SokoBot {
       }
     }
     // if move box, cost = 1
-    for (int i = 0; i < boxes.size() - 2; i++)
+    for (int i = 0; i < boxes.size() - 2; i+=2)
     {
         if (succX(x, move) == boxes.get(i) && succY(y, move) == boxes.get(i + 1))
         {
@@ -84,7 +84,7 @@ public class SokoBot {
     int distance;
     int sum = 0;
     int value;
-    for (int i = 0; i < boxes.size() - 2; i++)
+    for (int i = 0; i < boxes.size() - 2; i+=2)
     {
       distance = Integer.MAX_VALUE;
       for (Map.Entry<Integer, Integer> set: targets.entrySet())
@@ -99,6 +99,7 @@ public class SokoBot {
     }
     return sum;
   }
+
 
   public static int succX(int x , char move)
   {
