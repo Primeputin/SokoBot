@@ -7,9 +7,16 @@ public class SokoBot {
 
     int x = 0;
     int y = 0;
-    ArrayList<int[]> states = new ArrayList<>(); // list of states visited
+    ArrayList<StateNode> states = new ArrayList<>(); // list of states visited
     Map<Integer, Integer> targets = new HashMap<Integer, Integer>(); // list of targets
-    PriorityQueue<Integer> minCosts = new PriorityQueue<>();
+    // priority queue based on the cost of the state
+    PriorityQueue<StateNode> frontier = new PriorityQueue<>(new Comparator<StateNode>() {
+      @Override
+      public int compare(StateNode state1, StateNode state2) {
+        return Integer.compare(state1.getCost(), state2.getCost());
+      }
+    });
+
     ArrayList<Integer> boxes = new ArrayList<>(); // list of current boxes' position
 
     // Finding the position of the player, boxes, and targets
@@ -36,15 +43,14 @@ public class SokoBot {
       }
     }
     // Adding the starting state to the visited states
-    int[] startState = new int[boxes.size() + 2];
-    startState[0] = x;
-    startState[1] = y;
-    for (int i = 2; i <  boxes.size(); i++)
+    int[] currentState = new int[boxes.size() + 2];
+    currentState[0] = x;
+    currentState[1] = y;
+    for (int i = 2; i < currentState.length; i++)
     {
-      startState[i] =  boxes.get(i);
+      currentState[i] =  boxes.get(i - 2);
     }
-    states.add(startState);
-
+    frontier.add(new StateNode(0, 0, -1, currentState, ' ')); // starting state added to frontier
 
     System.out.println("height: " + height + " width: " + width);
     System.out.println("x: " + x + " y: " + y);
@@ -52,44 +58,23 @@ public class SokoBot {
 
     for (char action: actions(width, height, x, y, mapData, itemsData))
     {
-      System.out.println(cost(x, y, action, boxes, targets) + heuristic(boxes, targets));
+      System.out.println(succeed(0, 0, currentState, action, targets).getCost());
     }
     return "lrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlr";
   }
 
-  public static int cost(int x, int y, char move, ArrayList<Integer> boxes, Map<Integer, Integer> targets)
-  {
-    // if move box out of target, cost = 2
-    for (Map.Entry<Integer, Integer> set: targets.entrySet())
-    {
-      if (set.getKey() == x && set.getValue() == y)
-      {
-        return 2;
-      }
-    }
-    // if move box, cost = 1
-    for (int i = 0; i < boxes.size() - 2; i+=2)
-    {
-        if (succX(x, move) == boxes.get(i) && succY(y, move) == boxes.get(i + 1))
-        {
-          return 1;
-        }
-    }
-    // if just moving, cost = 0
-    return 0;
-  }
-  public static int heuristic(ArrayList<Integer> boxes, Map<Integer, Integer> targets)
+  public static int heuristic(int[] state, Map<Integer, Integer> targets)
   {
 //     heuristic value = minimum manhattan distance between each box and a target
     int distance;
     int sum = 0;
     int value;
-    for (int i = 0; i < boxes.size() - 2; i+=2)
+    for (int i = 2; i < state.length; i+=2)
     {
       distance = Integer.MAX_VALUE;
       for (Map.Entry<Integer, Integer> set: targets.entrySet())
       {
-        value = Math.abs(boxes.get(i) - set.getKey()) + Math.abs(boxes.get(i + 1) - set.getValue());
+        value = Math.abs(state[i] - set.getKey()) + Math.abs(state[i + 1] - set.getValue());
         if (distance > value)
         {
           distance = value;
@@ -100,6 +85,47 @@ public class SokoBot {
     return sum;
   }
 
+  public static StateNode succeed(int actualCost, int previousState, int[] state, char move, Map<Integer, Integer> targets)
+  {
+    int newX = succX(state[0], move);
+    int newY = succY(state[1], move);
+    int[] newState = Arrays.copyOf(state, state.length);
+    newState[0] = newX;
+    newState[1] = newY;
+    int cost = 0; // just move in a free space
+    boolean checkCost = false;
+
+    for (Map.Entry<Integer, Integer> set: targets.entrySet())
+    {
+      for (int i = 2; i < state.length; i+=2)
+      {
+        if (newX == state[i] && newY == state[i + 1])
+        {
+          newState[i] = succX(state[i], move);
+          newState[i + 1] = succY(state[i + 1], move);
+          // if move box out of target, cost = 2
+          if (newX == set.getKey() && newY == set.getValue())
+          {
+            cost = 2;
+          }
+          else
+          {
+            cost = 1; // if move box, cost = 1
+          }
+          checkCost = true;
+          break;
+
+        }
+        if (checkCost)
+        {
+          break;
+        }
+      }
+
+    }
+    return new StateNode(cost + actualCost + heuristic(state, targets), actualCost, previousState, newState, move);
+
+  }
 
   public static int succX(int x , char move)
   {
