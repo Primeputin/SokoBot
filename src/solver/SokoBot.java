@@ -178,7 +178,7 @@ public class SokoBot {
     int[] newState = Arrays.copyOf(state, state.length);
     newState[0] = newX;
     newState[1] = newY;
-    int cost = 0; // just move in a free space
+    int cost = 1; // just move in a free space
     boolean checkCost = false;
 
     for (int i = 0; i < targets.size(); i+=2)
@@ -189,14 +189,14 @@ public class SokoBot {
         {
           newState[j] = succX(state[j], move);
           newState[j + 1] = succY(state[j + 1], move);
-          // if move box out of target, cost = 2
+          // if move box out of target, cost = 3
           if (newX == targets.get(i) && newY == targets.get(i + 1))
           {
-            cost = 2;
+            cost = 3;
           }
           else
           {
-            cost = 1; // if move box, cost = 1
+            cost = 2; // if move box, cost = 2
           }
           checkCost = true;
           break;
