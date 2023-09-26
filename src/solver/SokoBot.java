@@ -1,6 +1,5 @@
 package solver;
 
-import java.security.spec.RSAOtherPrimeInfo;
 import java.util.*;
 
 public class SokoBot {
@@ -97,7 +96,7 @@ public class SokoBot {
 
       for (char action: actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData))
       {
-        nextState = succeed(removed.getActualCost(), removed.getIndex(), removed.getState(), action, targets, itemsData);
+        nextState = succeed(removed.getActualCost(), removed.getIndex(), removed.getState(), action, targets);
         // if not visited, add to the frontier
         if (!nextState.sameStateToAll(states))
         {
@@ -171,7 +170,7 @@ public class SokoBot {
     return sum;
   }
 
-  public static StateNode succeed(int actualCost, int previousState, int[] state, char move, ArrayList<Integer> targets, char[][] itemsData)
+  public static StateNode succeed(int actualCost, int previousState, int[] state, char move, ArrayList<Integer> targets)
   {
     int newX = succX(state[0], move);
     int newY = succY(state[1], move);
