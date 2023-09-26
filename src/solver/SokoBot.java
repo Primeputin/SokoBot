@@ -7,7 +7,7 @@ public class SokoBot {
 
     int x = 0;
     int y = 0;
-    ArrayList<StateNode> states = new ArrayList<>(); // list of states visited
+    HashMap<String, StateNode> states = new HashMap<>(5000);
     ArrayList<Integer> targets = new ArrayList<>(); // list of targets
     // priority queue based on the cost of the state
     PriorityQueue<StateNode> frontier = new PriorityQueue<>(new Comparator<StateNode>() {
@@ -52,10 +52,9 @@ public class SokoBot {
       currentState[i] =  boxes.get(i - 2);
     }
 
-    frontier.add(new StateNode(0, 0, 0, -1, currentState, ' ')); // starting state added to frontier
+    frontier.add(new StateNode(0, 0, "", currentState, ' ')); // starting state added to frontier
     StateNode removed;
     StateNode nextState;
-    int stateIndex = 0;
     while (!frontier.isEmpty())
     {
       removed = frontier.poll();
@@ -64,9 +63,8 @@ public class SokoBot {
         System.out.println(returnSolution(states, removed));
         return returnSolution(states, removed);
       }
-      removed.setIndex(stateIndex);
-      states.add(removed);
-      stateIndex += 1;
+
+      states.put(removed.getStringState(), removed);
 
       // apply the current state to the item data
       // it doesn't matter if the target data got overwritten since it's already saved before in another list
@@ -91,14 +89,13 @@ public class SokoBot {
         System.out.println("");
       }
 
-      System.out.println(removed.getIndex());
       System.out.println(actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData));
 
       for (char action: actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData))
       {
-        nextState = succeed(removed.getActualCost(), removed.getIndex(), removed.getState(), action, targets);
+        nextState = succeed(removed.getActualCost(), removed.getStringState(), removed.getState(), action, targets);
         // if not visited, add to the frontier
-        if (!nextState.sameStateToAll(states))
+        if (!states.containsKey(nextState.getStringState()))
         {
           frontier.add(nextState);
         }
@@ -114,11 +111,11 @@ public class SokoBot {
     return "lrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlrlr";
   }
 
-  public static String returnSolution(ArrayList<StateNode> states, StateNode goal)
+  public static String returnSolution(HashMap<String, StateNode> states, StateNode goal)
   {
     StateNode temp = goal;
     String todo = "";
-    while (temp.getIndex() != 0)
+    while (temp.getPreviousState() != "")
     {
       todo = temp.getMove() + todo;
       temp = states.get(temp.getPreviousState());
@@ -170,7 +167,7 @@ public class SokoBot {
     return sum;
   }
 
-  public static StateNode succeed(int actualCost, int previousState, int[] state, char move, ArrayList<Integer> targets)
+  public static StateNode succeed(int actualCost, String previousState, int[] state, char move, ArrayList<Integer> targets)
   {
     int newX = succX(state[0], move);
     int newY = succY(state[1], move);

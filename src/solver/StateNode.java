@@ -1,56 +1,26 @@
 package solver;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class StateNode {
     private final int cost;
     private final int actualCost;
-    private int index;
-    private final int previousState;
+    private String previousState;
     private final int[] state;
     private final char move;
+    private String stringState;
 
-    public StateNode(int cost, int actualCost, int index, int previousState, int[] state, char move)
+    public StateNode(int cost, int actualCost, String previousState, int[] state, char move)
     {
         this.cost = cost;
         this.actualCost = actualCost;
-        this.index = index;
         this.previousState = previousState;
         this.state = Arrays.copyOf(state, state.length);
         this.move = move;
-    }
-
-    public StateNode(int cost, int actualCost, int previousState, int[] state, char move)
-    {
-        this.cost = cost;
-        this.actualCost = actualCost;
-        this.index = -1;
-        this.previousState = previousState;
-        this.state = Arrays.copyOf(state, state.length);
-        this.move = move;
-    }
-
-
-    boolean sameStateToAll(ArrayList<StateNode> comparedStates)
-    {
-        int count;
-        for (StateNode certainState: comparedStates)
+        for (int i: state)
         {
-            count = 0;
-            for (int i = 0; i < certainState.getState().length; i++)
-            {
-                if (this.state[i] == certainState.getState()[i])
-                {
-                    count += 1;
-                }
-            }
-            if (count == this.state.length)
-            {
-                return true;
-            }
+            stringState += Integer.toString(i);
         }
-        return false;
     }
 
     public int getCost()
@@ -63,12 +33,7 @@ public class StateNode {
         return actualCost;
     }
 
-    public int getIndex()
-    {
-        return index;
-    }
-
-    public int getPreviousState()
+    public String getPreviousState()
     {
         return previousState;
     }
@@ -83,9 +48,9 @@ public class StateNode {
         return move;
     }
 
-    public void setIndex(int index)
+    public String getStringState()
     {
-        this.index = index;
+        return stringState;
     }
 
 }
