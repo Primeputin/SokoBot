@@ -89,9 +89,9 @@ public class SokoBot {
         System.out.println("");
       }
 
-      System.out.println(actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData));
+      System.out.println(actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData, targets));
 
-      for (char action: actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData))
+      for (char action: actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData, targets))
       {
         nextState = succeed(removed.getActualCost(), removed.getStringState(), removed.getState(), action, targets);
         // if not visited, add to the frontier
@@ -239,7 +239,42 @@ public class SokoBot {
       };
   }
 
-  public static ArrayList<Character> actions(int width, int height, int x, int y, char[][] mapData, char[][] itemsData)
+  public static boolean isInTargets(int x, int y, ArrayList<Integer> targets)
+  {
+    for (int i = 0; i < targets.size(); i+=2)
+    {
+      if (x == targets.get(i) && y == targets.get(i + 1))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean isCorner(int x, int y, char[][] mapData, ArrayList<Integer> targets)
+  {
+    boolean horizontal = false;
+    boolean vertical = false;
+
+    if (isInTargets(x + 1, y, targets) || isInTargets(x - 1, y, targets) || isInTargets(x, y -1, targets) || isInTargets(x, y + 1, targets) || isInTargets(x, y, targets))
+    {
+      return false;
+    }
+    if (mapData[y][x + 1] == '#' || mapData[y][x - 1] == '#')
+    {
+      horizontal = true;
+    }
+    if (mapData[y + 1][x] == '#' || mapData[y - 1][x] == '#')
+    {
+      vertical = true;
+    }
+    if (horizontal && vertical)
+    {
+      System.out.println("Is corner!!!!");
+    }
+    return horizontal && vertical;
+  }
+  public static ArrayList<Character> actions(int width, int height, int x, int y, char[][] mapData, char[][] itemsData, ArrayList<Integer> targets)
   {
 
     // need to implement where it checks if the action will go to a visited state
@@ -251,9 +286,9 @@ public class SokoBot {
       {
         if (x + 2 < width)
         {
-          if (mapData[y][x + 2] != '#' && itemsData[y][x + 2] != '$')
+          if (mapData[y][x + 2] != '#' && itemsData[y][x + 2] != '$' && !isCorner(x + 2, y, mapData, targets))
           {
-            moves.add('r');
+              moves.add('r');
           }
         }
         else
@@ -273,9 +308,9 @@ public class SokoBot {
       {
         if (x - 2 >= 0)
         {
-          if (mapData[y][x - 2] != '#' && itemsData[y][x - 2] != '$')
+          if (mapData[y][x - 2] != '#' && itemsData[y][x - 2] != '$' && !isCorner(x - 2, y, mapData, targets))
           {
-            moves.add('l');
+              moves.add('l');
           }
         }
         else
@@ -295,9 +330,10 @@ public class SokoBot {
       {
         if (y + 2 < height)
         {
-          if (mapData[y + 2][x] != '#' && itemsData[y + 2][x] != '$')
+          if (mapData[y + 2][x] != '#' && itemsData[y + 2][x] != '$' && !isCorner(x, y + 2, mapData, targets))
           {
-            moves.add('d');
+              moves.add('d');
+
           }
         }
         else
@@ -317,9 +353,9 @@ public class SokoBot {
       {
         if (y - 2 >= 0)
         {
-          if (mapData[y - 2][x] != '#' && itemsData[y - 2][x] != '$')
+          if (mapData[y - 2][x] != '#' && itemsData[y - 2][x] != '$' && !isCorner(x, y - 2, mapData, targets))
           {
-            moves.add('u');
+              moves.add('u');
           }
         }
         else
