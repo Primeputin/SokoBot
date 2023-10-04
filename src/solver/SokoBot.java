@@ -284,17 +284,10 @@ public class SokoBot {
     {
       if (itemsData[y][x + 1] == '$')
       {
-        if (x + 2 < width)
-        {
           if (mapData[y][x + 2] != '#' && itemsData[y][x + 2] != '$' && !isCorner(x + 2, y, mapData, targets))
           {
               moves.add('r');
           }
-        }
-        else
-        {
-          moves.add('r');
-        }
       }
       else
       {
@@ -306,17 +299,11 @@ public class SokoBot {
     {
       if (itemsData[y][x - 1] == '$')
       {
-        if (x - 2 >= 0)
-        {
           if (mapData[y][x - 2] != '#' && itemsData[y][x - 2] != '$' && !isCorner(x - 2, y, mapData, targets))
           {
               moves.add('l');
           }
-        }
-        else
-        {
-          moves.add('l');
-        }
+
       }
       else
       {
@@ -328,18 +315,12 @@ public class SokoBot {
     {
       if (itemsData[y + 1][x] == '$')
       {
-        if (y + 2 < height)
-        {
+
           if (mapData[y + 2][x] != '#' && itemsData[y + 2][x] != '$' && !isCorner(x, y + 2, mapData, targets))
           {
               moves.add('d');
 
           }
-        }
-        else
-        {
-          moves.add('d');
-        }
       }
       else
       {
@@ -351,17 +332,12 @@ public class SokoBot {
     {
       if (itemsData[y - 1][x] == '$')
       {
-        if (y - 2 >= 0)
-        {
+
           if (mapData[y - 2][x] != '#' && itemsData[y - 2][x] != '$' && !isCorner(x, y - 2, mapData, targets))
           {
               moves.add('u');
           }
-        }
-        else
-        {
-          moves.add('u');
-        }
+
       }
       else
       {
