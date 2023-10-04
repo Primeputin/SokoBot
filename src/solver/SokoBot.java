@@ -80,17 +80,6 @@ public class SokoBot {
         boxes.set(i, removed.getState()[i + 2]);
       }
 
-      for (int i = 0; i < itemsData.length; i++)
-      {
-        for (int j = 0; j < itemsData[i].length; j++)
-        {
-          System.out.print(itemsData[i][j]);
-        }
-        System.out.println("");
-      }
-
-      System.out.println(actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData, targets));
-
       for (char action: actions(width, height, removed.getState()[0], removed.getState()[1], mapData, itemsData, targets))
       {
         nextState = succeed(removed.getActualCost(), removed.getStringState(), removed.getState(), action, targets);
@@ -175,7 +164,7 @@ public class SokoBot {
     newState[0] = newX;
     newState[1] = newY;
     int cost = 1; // just move in a free space
-    boolean checkCost = false;
+    boolean movedBox = false;
 
     for (int i = 0; i < targets.size(); i+=2)
     {
@@ -185,38 +174,19 @@ public class SokoBot {
         {
           newState[j] = succX(state[j], move);
           newState[j + 1] = succY(state[j + 1], move);
-          // if move box out of target, cost = 3
-          if (newX == targets.get(i) && newY == targets.get(i + 1))
-          {
-            cost = 3;
-          }
-          else
-          {
-            cost = 2; // if move box, cost = 2
-          }
-          checkCost = true;
+
+          movedBox = true;
           break;
 
         }
-        if (checkCost)
-        {
-          break;
-        }
+      }
+      if (movedBox)
+      {
+        break;
       }
 
     }
 
-    for (int k = 0; k < state.length; k += 1)
-    {
-      System.out.print(state[k] + " ");
-    }
-    System.out.println("");
-    for (int k = 0; k < state.length; k += 1)
-    {
-      System.out.print(newState[k] + " ");
-    }
-    System.out.println("");
-    System.out.println(targets);
     return new StateNode(cost + actualCost + heuristic(newState, targets), actualCost + cost, previousState, newState, move);
 
   }
@@ -268,12 +238,9 @@ public class SokoBot {
     {
       vertical = true;
     }
-    if (horizontal && vertical)
-    {
-      System.out.println("Is corner!!!!");
-    }
     return horizontal && vertical;
   }
+
   public static ArrayList<Character> actions(int width, int height, int x, int y, char[][] mapData, char[][] itemsData, ArrayList<Integer> targets)
   {
 
