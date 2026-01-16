@@ -2,6 +2,7 @@ src/gui/*.class
 src/main/*.class
 src/reader/*.class
 src/solver/*.class
+*.pdf
 
 .DS_Store
 .idea/

@@ -60,7 +60,6 @@ public class SokoBot {
       removed = frontier.poll();
       if (isEnd(removed.getState(), targets))
       {
-        System.out.println(returnSolution(states, removed));
         return returnSolution(states, removed);
       }
 
